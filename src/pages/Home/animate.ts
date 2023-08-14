@@ -67,7 +67,7 @@ export default function animate(canvas: HTMLCanvasElement): void {
     };
   }
 
-  const { particlesObj, linesObj } = createCrystal(200);
+  const { particlesObj, linesObj } = createCrystal(500);
 
   (function animate() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);

@@ -47,7 +47,7 @@ export function get(canvas: HTMLCanvasElement): IGet {
       this.initialY = this.y;
       this.allowedRadius = 90;
       this.size = 5;
-      this.color = "#3a0ca3" || `hsl(4,50%,50%)`;
+      this.color = "rgba(103, 17, 05, 0.05)";
       this.speedX =  (Math.random() - 0.5);
       this.speedY =  (Math.random() - 0.5);
     }
@@ -101,8 +101,8 @@ export function get(canvas: HTMLCanvasElement): IGet {
 
     draw():void {
       ctx.beginPath();
-      ctx.strokeStyle = "blue";
-      ctx.lineWidth = 2;
+      ctx.strokeStyle = "rgba(103, 17, 05, 0.05)";
+      ctx.lineWidth = 1;
       ctx.moveTo(this.x1, this.y1);
       ctx.lineTo(this.x2, this.y2);
       ctx.stroke();
