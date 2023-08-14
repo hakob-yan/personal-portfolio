@@ -10,7 +10,7 @@ const Home = (): ReactElement => {
   return (
     <main>
       <section className="h-screen">
-        <canvas  className='bg-gradient-to-r from-indigo-500  h-full w-full' ref={canvasElem}></canvas>
+        <canvas  className='bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 h-full w-full' ref={canvasElem}></canvas>
       </section>
       <section className="flex">Hello</section>
     </main>
