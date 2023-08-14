@@ -27,6 +27,7 @@ export default function animate(canvas: HTMLCanvasElement): void {
   function createCrystal(count: number) {
     const particlesObj: IParticles = {};
     const linesObj: ILines = {};
+    const linesArr: ILine[] = []
     for (let i = 0; i < count; ++i) {
       const randomParticle = createRandomParticle();
       const x = randomParticle.x;
@@ -45,8 +46,9 @@ export default function animate(canvas: HTMLCanvasElement): void {
         const dx = x2 - x1;
         const dy = y2 - y1;
         const distance = Math.sqrt(dx * dx + dy * dy);
-        if (distance < 170) {
+        if (distance <2*particlesArr[j].allowedRadius) {
           const line = createLine(x1, y1, x2, y2);
+          linesArr.push(line)
           if (linesObj[`${x1}${y1}`]) {
             linesObj[`${x1}${y1}`].push(line);
           } else {
@@ -64,10 +66,11 @@ export default function animate(canvas: HTMLCanvasElement): void {
     return {
       particlesObj: particlesObj,
       linesObj: linesObj,
+      linesArr: linesArr
     };
   }
 
-  const { particlesObj, linesObj } = createCrystal(500);
+  const { particlesObj, linesObj, linesArr } = createCrystal(200);
 
   (function animate() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -75,23 +78,18 @@ export default function animate(canvas: HTMLCanvasElement): void {
     for (let key in particlesObj) {
       particlesObj[key].update();
       particlesObj[key].draw();
-
       const newX = particlesObj[key].x;
       const newY = particlesObj[key].y;
-      linesObj[key].forEach((el) => {
-        el.update(key, newX, newY);
-        el.draw();
-      });
-       
-      const partObj=particlesObj[key];
+      linesObj[key].forEach((el) => el.update(key, newX, newY));
+      const partObj = particlesObj[key];
       delete particlesObj[key];
-      particlesObj[`${newX}${newY}`]=partObj;
-
-
-      const liObj=linesObj[key];
+      particlesObj[`${newX}${newY}`] = partObj;
+      const liObj = linesObj[key];
       delete linesObj[key];
-      linesObj[`${newX}${newY}`]=liObj;
+      linesObj[`${newX}${newY}`] = liObj;
     }
+    linesArr.forEach(el => el.draw());
+    
 
     requestAnimationFrame(animate);
   })();

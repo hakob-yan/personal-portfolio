@@ -12,12 +12,18 @@ export interface IParticle {
   draw: () => void;
 }
 
+function getRandomSpeed(delta: number, start: number) {
+  const deltaSpeed = Math.random() * delta - 0.5 * delta;
+  const finalSpeed = deltaSpeed / Math.abs(deltaSpeed) * start + deltaSpeed;
+  return finalSpeed;
+}
+
 export interface ILine {
   x1: number;
   y1: number;
   x2: number;
   y2: number;
-  update: (key:string,x: number, y: number) => void;
+  update: (key: string, x: number, y: number) => void;
   draw: () => void;
 }
 
@@ -45,11 +51,11 @@ export function get(canvas: HTMLCanvasElement): IGet {
       this.y = Math.random() * canvas.height;
       this.initialX = this.x;
       this.initialY = this.y;
-      this.allowedRadius = 90;
+      this.allowedRadius =100;
       this.size = 5;
-      this.color = "rgba(103, 17, 05, 0.05)";
-      this.speedX =  (Math.random() - 0.5);
-      this.speedY =  (Math.random() - 0.5);
+      this.color = "rgba(103, 17, 05, 0.2)";
+      this.speedX = getRandomSpeed(0.5, 0.3);
+      this.speedY = getRandomSpeed(0.5, 0.3);
     }
     update() {
       const dx = this.x + this.speedX - this.initialX;
@@ -60,15 +66,14 @@ export function get(canvas: HTMLCanvasElement): IGet {
         this.x += this.speedX;
         this.y += this.speedY;
       } else {
-        const newSpeedX = 0.2 * (Math.random() - 0.5);
-        const newSpeedY = 0.2 * (Math.random() - 0.5);
+        const newSpeedX = getRandomSpeed(0.5, 0.3);
+        const newSpeedY = getRandomSpeed(0.5, 0.3) ;
         this.speedX = newSpeedX;
         this.speedY = newSpeedY;
         this.x += this.speedX;
         this.y += this.speedY;
       }
-      this.speedX = this.speedX + this.speedX * 0.05 * Math.abs(this.speedX);
-      this.speedY = this.speedY + this.speedY * 0.05 * Math.abs(this.speedY);
+    
     }
     draw() {
       ctx.fillStyle = this.color;
@@ -89,7 +94,7 @@ export function get(canvas: HTMLCanvasElement): IGet {
       this.x2 = x2;
       this.y2 = y2;
     }
-    update(key: string, x: number, y: number):void {
+    update(key: string, x: number, y: number): void {
       if (key === `${this.x1}${this.y1}`) {
         this.x1 = x;
         this.y1 = y;
@@ -99,9 +104,9 @@ export function get(canvas: HTMLCanvasElement): IGet {
       }
     }
 
-    draw():void {
+    draw(): void {
       ctx.beginPath();
-      ctx.strokeStyle = "rgba(103, 17, 05, 0.05)";
+      ctx.strokeStyle = "rgba(103, 17, 05, 0.2)";
       ctx.lineWidth = 1;
       ctx.moveTo(this.x1, this.y1);
       ctx.lineTo(this.x2, this.y2);
