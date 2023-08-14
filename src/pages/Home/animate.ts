@@ -22,11 +22,11 @@ export default function animate(canvas: HTMLCanvasElement): void {
             this.y = Math.random() * canvas.height;
             this.initialX = this.x;
             this.initialY = this.y;
-            this.allowedRadius = 100;
+            this.allowedRadius = 70;
             this.size = Math.random() * 8 + 1;
             this.color = '#3a0ca3' || `hsl(4,50%,50%)`;
-            this.speedX = 0.3*(Math.random() -0.5);
-            this.speedY = 0.3*(Math.random() -0.5);
+            this.speedX = 0.2 * (Math.random() - 0.5);
+            this.speedY = 0.2 * (Math.random() - 0.5);
         }
         update() {
             const dx = this.x + this.speedX - this.initialX;
@@ -38,15 +38,15 @@ export default function animate(canvas: HTMLCanvasElement): void {
                 this.y += this.speedY;
             }
             else {
-                const newSpeedX = 0.3*(Math.random() -0.5);
-                const newSpeedY = 0.3*(Math.random() -0.5);
+                const newSpeedX = 0.2 * (Math.random() - 0.5);
+                const newSpeedY = 0.2 * (Math.random() - 0.5);
                 this.speedX = newSpeedX;
                 this.speedY = newSpeedY;
                 this.x += this.speedX;
                 this.y += this.speedY;
             }
-            this.speedX = this.speedX + this.speedX *0.05* Math.abs(this.speedX);
-            this.speedY = this.speedY + this.speedY *0.05* Math.abs(this.speedY);
+            this.speedX = this.speedX + this.speedX * 0.05 * Math.abs(this.speedX);
+            this.speedY = this.speedY + this.speedY * 0.05 * Math.abs(this.speedY);
 
 
         }
@@ -58,13 +58,55 @@ export default function animate(canvas: HTMLCanvasElement): void {
 
         }
     }
+
+    class Line {
+        x1: number;
+        y1: number;
+        x2: number;
+        y2: number;
+        constructor(x1: number, y1: number, x2: number, y2: number) {
+            this.x1 = x1;
+            this.y1 = y1;
+            this.x2 = x2;
+            this.y2 = y2
+        }
+        update(x1: number, y1: number, x2: number, y2: number) {
+            this.x1 = x1;
+            this.y1 = y1;
+            this.x2 = x2;
+            this.y2 = y2;
+        }
+        draw() {
+            ctx.beginPath();
+            ctx.strokeStyle = 'white'
+            ctx.lineWidth = 2
+            ctx.moveTo(this.x1, this.y1);
+            ctx.lineTo(this.x2, this.y2);
+            ctx.stroke()
+        }
+    }
+
     const particlesArr: Particle[] = []
+    const lineArr: Line[] = []
     for (let i = 0; i < 200; ++i) {
         particlesArr.push(new Particle());
-    }
-    canvas.addEventListener('mousemove', () => {
 
-    });
+    }
+    for (let i = 0; i < particlesArr.length; ++i) {
+        for (let j = i; j < particlesArr.length; ++j) {
+            const x1 = particlesArr[i].x;
+            const y1 = particlesArr[i].y;
+            const x2 = particlesArr[j].x;
+            const y2 = particlesArr[j].y;
+            const dx = x2 - x1;
+            const dy = y2 - y1;
+            const distance = Math.sqrt(dx * dx + dy * dy)
+            if (distance < 50) {
+                lineArr.push(new Line(x1, y1, x2, y2))
+            }
+
+        }
+    }
 
     (function animate() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -77,13 +119,8 @@ export default function animate(canvas: HTMLCanvasElement): void {
                 const dx = particlesArr[i].x - particlesArr[j].x;
                 const dy = particlesArr[i].y - particlesArr[j].y;
                 const distance = Math.sqrt(dx * dx + dy * dy);
-                if (distance < particlesArr[i].allowedRadius *2) {
-                    ctx.beginPath();
-                    ctx.strokeStyle = particlesArr[i].color
-                    ctx.lineWidth = particlesArr[i].size / 10
-                    ctx.moveTo(particlesArr[i].x, particlesArr[i].y);
-                    ctx.lineTo(particlesArr[j].x, particlesArr[j].y);
-                    ctx.stroke()
+                if (distance < 50) {
+                    lineArr[i].draw()
                 }
             }
         }
