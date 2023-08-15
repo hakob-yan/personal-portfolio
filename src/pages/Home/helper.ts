@@ -13,10 +13,19 @@ export interface IParticle {
   draw: () => void;
 }
 
-function getRandomSpeed(delta: number, start: number) {
-  const deltaSpeed = Math.random() * delta - 0.5 * delta;
-  const finalSpeed = deltaSpeed / Math.abs(deltaSpeed) * start + deltaSpeed;
-  return finalSpeed;
+function getXYSpeedByK(speedK:number,prevSpeedX?: number, prevSpeedY?: number) {
+  const speed = {x: 0.1,y: 0.2 }
+  if (prevSpeedX && prevSpeedY) {    
+    speed.x = -Math.sign(prevSpeedX) * Math.random();
+    speed.y = -Math.sign(prevSpeedY) * Math.random();
+  }
+  speed.x = Math.random() * 2 - 1;
+  speed.y = Math.random() * 2 - 1;
+  const k = Math.sqrt(speedK / (speed.x * speed.x + speed.y * speed.y))
+  speed.x = k* speed.x;
+  speed.y = k* speed.y;
+
+  return speed
 }
 
 export interface ILine {
@@ -49,6 +58,7 @@ export function get(canvas: HTMLCanvasElement): IGet {
     allowedRadius: number;
     newDirection: boolean;
     constructor() {
+      const speed = getXYSpeedByK(0.2)
       this.x = Math.random() * canvas.width;
       this.y = Math.random() * canvas.height;
       this.initialX = this.x;
@@ -56,8 +66,8 @@ export function get(canvas: HTMLCanvasElement): IGet {
       this.allowedRadius = 100;
       this.size = 5;
       this.color = "rgba(103, 17, 05, 0.2)";
-      this.speedX = getRandomSpeed(0.5, 0.3);
-      this.speedY = getRandomSpeed(0.5, 0.3);
+      this.speedX = speed.x
+      this.speedY = speed.y
       this.newDirection = true;
     }
     update() {
@@ -69,23 +79,11 @@ export function get(canvas: HTMLCanvasElement): IGet {
         this.x += this.speedX;
         this.y += this.speedY;
       } else {
-        const newSpeedX = getRandomSpeed(0.5, 0.3);
-        const newSpeedY = getRandomSpeed(0.5, 0.3);
-        this.speedX = newSpeedX;
-        this.speedY = newSpeedY;
-        // this.x += this.speedX;
-        // this.y += this.speedY;
-        const a = { x: this.initialX - this.x, y: this.initialY - this.y };
-        const b = { x: this.speedX, y: this.speedY };
-        const cosAngle = (a.x * b.x + a.y * b.y) / (Math.sqrt(a.x * a.x + a.y * a.y) * Math.sqrt(b.x * b.x + b.y * b.y));
-        const featureDistance = 2 * cosAngle * this.allowedRadius;
-
-        
-
-
-
-
-
+        const speed = getXYSpeedByK(0.2,this.speedX, this.speedY);
+        this.speedX = speed.x;
+        this.speedY = speed.y;
+        this.x += this.speedX;
+        this.y += this.speedY;
 
       }
 
