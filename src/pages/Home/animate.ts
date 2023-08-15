@@ -70,7 +70,7 @@ export default function animate(canvas: HTMLCanvasElement): void {
     };
   }
 
-  const { particlesObj, linesObj, linesArr } = createCrystal(200);
+  const { particlesObj, linesObj, linesArr } = createCrystal(100);
 
   (function animate() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -88,8 +88,7 @@ export default function animate(canvas: HTMLCanvasElement): void {
       delete linesObj[key];
       linesObj[`${newX}${newY}`] = liObj;
     }
-    linesArr.forEach(el => el.draw());
-    
+    linesArr.forEach(el => el.draw());  
 
     requestAnimationFrame(animate);
   })();

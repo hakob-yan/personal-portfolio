@@ -8,6 +8,7 @@ export interface IParticle {
   initialX: number;
   initialY: number;
   allowedRadius: number;
+  newDirection: boolean;
   update: () => void;
   draw: () => void;
 }
@@ -46,16 +47,18 @@ export function get(canvas: HTMLCanvasElement): IGet {
     initialX: number;
     initialY: number;
     allowedRadius: number;
+    newDirection: boolean;
     constructor() {
       this.x = Math.random() * canvas.width;
       this.y = Math.random() * canvas.height;
       this.initialX = this.x;
       this.initialY = this.y;
-      this.allowedRadius =100;
+      this.allowedRadius = 100;
       this.size = 5;
       this.color = "rgba(103, 17, 05, 0.2)";
       this.speedX = getRandomSpeed(0.5, 0.3);
       this.speedY = getRandomSpeed(0.5, 0.3);
+      this.newDirection = true;
     }
     update() {
       const dx = this.x + this.speedX - this.initialX;
@@ -67,19 +70,36 @@ export function get(canvas: HTMLCanvasElement): IGet {
         this.y += this.speedY;
       } else {
         const newSpeedX = getRandomSpeed(0.5, 0.3);
-        const newSpeedY = getRandomSpeed(0.5, 0.3) ;
+        const newSpeedY = getRandomSpeed(0.5, 0.3);
         this.speedX = newSpeedX;
         this.speedY = newSpeedY;
-        this.x += this.speedX;
-        this.y += this.speedY;
+        // this.x += this.speedX;
+        // this.y += this.speedY;
+        const a = { x: this.initialX - this.x, y: this.initialY - this.y };
+        const b = { x: this.speedX, y: this.speedY };
+        const cosAngle = (a.x * b.x + a.y * b.y) / (Math.sqrt(a.x * a.x + a.y * a.y) * Math.sqrt(b.x * b.x + b.y * b.y));
+        const featureDistance = 2 * cosAngle * this.allowedRadius;
+
+        
+
+
+
+
+
+
       }
-    
+
     }
     draw() {
       ctx.fillStyle = this.color;
       ctx.beginPath();
       ctx.arc(this.x, this.y, this.size, 0, 2 * Math.PI);
       ctx.fill();
+
+      // ctx.fillStyle = 'rgba(103, 17, 05, 0.1)';
+      // ctx.beginPath();
+      // ctx.arc(this.initialX, this.initialY, this.allowedRadius, 0, 2 * Math.PI);
+      // ctx.fill();
     }
   }
 
