@@ -9,21 +9,29 @@ export interface IParticle {
   initialY: number;
   allowedRadius: number;
   newDirection: boolean;
+  featurePath: {
+    dictance: number;
+    centerX: number,
+    centerY: number,
+
+  };
+
   update: () => void;
   draw: () => void;
 }
 
-function getXYSpeedByK(speedK:number,prevSpeedX?: number, prevSpeedY?: number) {
-  const speed = {x: 0.1,y: 0.2 }
-  if (prevSpeedX && prevSpeedY) {    
+function getXYSpeedByK(speedK: number, prevSpeedX?: number, prevSpeedY?: number) {
+  const speed = { x: 0, y: 0 }
+  if (prevSpeedX !== undefined && prevSpeedY !== undefined) {
     speed.x = -Math.sign(prevSpeedX) * Math.random();
     speed.y = -Math.sign(prevSpeedY) * Math.random();
+  } else {
+    speed.x = Math.random() * 2 - 1;
+    speed.y = Math.random() * 2 - 1;
   }
-  speed.x = Math.random() * 2 - 1;
-  speed.y = Math.random() * 2 - 1;
   const k = Math.sqrt(speedK / (speed.x * speed.x + speed.y * speed.y))
-  speed.x = k* speed.x;
-  speed.y = k* speed.y;
+  speed.x = k * speed.x;
+  speed.y = k * speed.y;
 
   return speed
 }
@@ -57,8 +65,14 @@ export function get(canvas: HTMLCanvasElement): IGet {
     initialY: number;
     allowedRadius: number;
     newDirection: boolean;
+    featurePath: {
+      dictance: number;
+      centerX: number,
+      centerY: number,
+
+    };
     constructor() {
-      const speed = getXYSpeedByK(0.2)
+      const speed = getXYSpeedByK(0.01)
       this.x = Math.random() * canvas.width;
       this.y = Math.random() * canvas.height;
       this.initialX = this.x;
@@ -69,35 +83,46 @@ export function get(canvas: HTMLCanvasElement): IGet {
       this.speedX = speed.x
       this.speedY = speed.y
       this.newDirection = true;
+      this.featurePath = { dictance: this.allowedRadius, centerX: 0, centerY: 0 };
     }
     update() {
       const dx = this.x + this.speedX - this.initialX;
       const dy = this.y + this.speedY - this.initialY;
       const distance = Math.sqrt(dx * dx + dy * dy);
-
-      if (distance < this.allowedRadius) {
-        this.x += this.speedX;
-        this.y += this.speedY;
-      } else {
-        const speed = getXYSpeedByK(0.2,this.speedX, this.speedY);
+      if (distance > this.allowedRadius) {
+        const speed = getXYSpeedByK(0.01, this.speedX, this.speedY);
         this.speedX = speed.x;
         this.speedY = speed.y;
-        this.x += this.speedX;
-        this.y += this.speedY;
-
+        
+        // const a = { x: this.speedX, y: this.speedY }
+        // const b = { x: this.initialX - this.x, y: this.initialY - this.y };
+        // const da = Math.sqrt(a.x * a.x + a.y * a.y)
+        // const db = Math.sqrt(b.x * b.x + b.y * b.y);
+        // const cosAngle = (a.x * b.x + a.y * b.y) / (da * db);
+        // const featureDistance = Math.abs(2 * cosAngle * this.allowedRadius);
+        // const k = Math.sqrt(1 / (this.speedX * this.speedX + this.speedY * this.speedY))
+        // this.featurePath = { dictance: featureDistance, centerX: featureDistance / 2 * k * this.speedX, centerY: featureDistance / 2 * k * this.speedY };
+        
+        console.log(this);
       }
+      
+      
+      
+      this.x += this.speedX;
+      this.y += this.speedY;
 
     }
     draw() {
+
       ctx.fillStyle = this.color;
       ctx.beginPath();
       ctx.arc(this.x, this.y, this.size, 0, 2 * Math.PI);
       ctx.fill();
 
-      // ctx.fillStyle = 'rgba(103, 17, 05, 0.1)';
-      // ctx.beginPath();
-      // ctx.arc(this.initialX, this.initialY, this.allowedRadius, 0, 2 * Math.PI);
-      // ctx.fill();
+      ctx.fillStyle = 'rgba(103, 17, 05, 0.1)';
+      ctx.beginPath();
+      ctx.arc(this.initialX, this.initialY, this.allowedRadius, 0, 2 * Math.PI);
+      ctx.fill();
     }
   }
 

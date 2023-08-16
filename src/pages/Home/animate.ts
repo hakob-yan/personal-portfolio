@@ -8,9 +8,19 @@ interface ILines {
   [key: string]: ILine[];
 }
 
-export default function animate(canvas: HTMLCanvasElement): void {
+interface IAnimate {
+  start: () => void,
+  end: () => void,
+
+}
+
+
+export default function animate(canvas: HTMLCanvasElement): IAnimate {
   if (!canvas) {
-    return;
+    return {
+      start: () => { },
+      end: () => { }
+    };
   }
   const ctx: CanvasRenderingContext2D = canvas.getContext(
     "2d"
@@ -46,7 +56,7 @@ export default function animate(canvas: HTMLCanvasElement): void {
         const dx = x2 - x1;
         const dy = y2 - y1;
         const distance = Math.sqrt(dx * dx + dy * dy);
-        if (distance <2*particlesArr[j].allowedRadius) {
+        if (distance < 2 * particlesArr[j].allowedRadius) {
           const line = createLine(x1, y1, x2, y2);
           linesArr.push(line)
           if (linesObj[`${x1}${y1}`]) {
@@ -70,26 +80,37 @@ export default function animate(canvas: HTMLCanvasElement): void {
     };
   }
 
-  const { particlesObj, linesObj, linesArr } = createCrystal(100);
+  let { particlesObj, linesObj, linesArr } = createCrystal(1);
+  return {
+    start: () => {
+      (function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  (function animate() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+        for (let key in particlesObj) {
+          particlesObj[key].update();
+          particlesObj[key].draw();
+          const newX = particlesObj[key].x;
+          const newY = particlesObj[key].y;
+          linesObj[key].forEach((el) => el.update(key, newX, newY));
+          const partObj = particlesObj[key];
+          delete particlesObj[key];
+          particlesObj[`${newX}${newY}`] = partObj;
+          const liObj = linesObj[key];
+          delete linesObj[key];
+          linesObj[`${newX}${newY}`] = liObj;
+        }
+        linesArr.forEach(el => el.draw());
 
-    for (let key in particlesObj) {
-      particlesObj[key].update();
-      particlesObj[key].draw();
-      const newX = particlesObj[key].x;
-      const newY = particlesObj[key].y;
-      linesObj[key].forEach((el) => el.update(key, newX, newY));
-      const partObj = particlesObj[key];
-      delete particlesObj[key];
-      particlesObj[`${newX}${newY}`] = partObj;
-      const liObj = linesObj[key];
-      delete linesObj[key];
-      linesObj[`${newX}${newY}`] = liObj;
+        requestAnimationFrame(animate);
+      })();
+
+    },
+    end: () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particlesObj = {};
+      linesObj = {};
+      linesArr = [];      
     }
-    linesArr.forEach(el => el.draw());  
+  }
 
-    requestAnimationFrame(animate);
-  })();
 }
