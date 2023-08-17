@@ -93,21 +93,20 @@ export function get(canvas: HTMLCanvasElement): IGet {
 
     };
     constructor() {
-      const speed = getXYSpeedByK(0.2)
+      const speed = getXYSpeedByK(2)
       this.x = Math.random() * canvas.width;
       this.y = Math.random() * canvas.height;
       this.initialX = this.x;
       this.initialY = this.y;
       this.allowedRadius = 100;
       this.size = 5;
-      this.color = "rgba(103, 17, 05, 0.2)";
+      this.color = "rgba(103, 557, 05, 0.2)";
       this.speedX = speed.x
       this.speedY = speed.y
       this.newDirection = true;
       const cosAngle = this.speedX / (Math.sqrt(Math.pow(this.speedX, 2) + Math.pow(this.speedY, 2)));
       const sinAngle = Math.sqrt(1 - Math.pow(cosAngle, 2))
-      this.featurePath = { dictance: this.allowedRadius, finalX:this.x+ this.allowedRadius * cosAngle, finalY:this.y+ this.allowedRadius * sinAngle };
-      console.log(JSON.stringify(this, null, 4));
+      this.featurePath = { dictance: this.allowedRadius, finalX: this.x + this.allowedRadius * cosAngle, finalY: this.y + this.allowedRadius * sinAngle };
 
     }
     update() {
@@ -118,7 +117,7 @@ export function get(canvas: HTMLCanvasElement): IGet {
 
         let cosAngle = -1;
         do {
-          const speed = getXYSpeedByK(0.2, this.speedX, this.speedY);
+          const speed = getXYSpeedByK(2, this.speedX, this.speedY);
           this.speedX = speed.x;
           this.speedY = speed.y;
           const info = getFeaturePathData(this);
@@ -126,8 +125,6 @@ export function get(canvas: HTMLCanvasElement): IGet {
           cosAngle = info.cosAngle;
         }
         while (cosAngle < 0);
-        console.log(distance);
-        console.log(JSON.stringify(this, null, 4));
 
 
       }
@@ -136,10 +133,12 @@ export function get(canvas: HTMLCanvasElement): IGet {
       const featureD = this.featurePath.dictance
       const d = Math.sqrt(Math.pow(x0 - this.x, 2) + Math.pow(y0 - this.y, 2)) || 0.000000000001;
       let k = d / featureD;
-      // console.log(k);
+      if (k < 0.05) {
+        k = 0.05
+      }
 
-      this.x += (this.speedX)
-      this.y += (this.speedY);
+      this.x += (this.speedX * k)
+      this.y += (this.speedY * k);
 
     }
     draw() {
@@ -149,10 +148,10 @@ export function get(canvas: HTMLCanvasElement): IGet {
       ctx.arc(this.x, this.y, this.size, 0, 2 * Math.PI);
       ctx.fill();
 
-      ctx.fillStyle = 'rgba(103, 17, 05, 0.1)';
-      ctx.beginPath();
-      ctx.arc(this.initialX, this.initialY, this.allowedRadius, 0, 2 * Math.PI);
-      ctx.fill();
+      // ctx.fillStyle = 'rgba(103, 17, 05, 0.1)';
+      // ctx.beginPath();
+      // ctx.arc(this.initialX, this.initialY, this.allowedRadius, 0, 2 * Math.PI);
+      // ctx.fill();
     }
   }
 
@@ -179,7 +178,7 @@ export function get(canvas: HTMLCanvasElement): IGet {
 
     draw(): void {
       ctx.beginPath();
-      ctx.strokeStyle = "rgba(103, 17, 05, 0.2)";
+      ctx.strokeStyle = "rgba(103, 557, 05, 0.2)";
       ctx.lineWidth = 1;
       ctx.moveTo(this.x1, this.y1);
       ctx.lineTo(this.x2, this.y2);
