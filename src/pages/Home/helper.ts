@@ -66,8 +66,8 @@ function getFeaturePathData({ speedX, speedY, initialX, initialY, allowedRadius,
   const cosAngle = (a.x * b.x + a.y * b.y) / (da * db);
 
   const featureDistance = Math.abs(2 * cosAngle * allowedRadius);
-  const k = Math.sqrt(0.5 * featureDistance / (speedX * speedX + speedY * speedY));
-  const featurePath = { dictance: featureDistance, centerX:x+k* speedX, centerY:y+ k * speedY };
+  const k = Math.sqrt(Math.pow(0.5 * featureDistance, 2) / (speedX * speedX + speedY * speedY));
+  const featurePath = { dictance: featureDistance, centerX: x + k * speedX, centerY: y + k * speedY };
   return { featurePath, cosAngle }
 }
 
@@ -93,7 +93,7 @@ export function get(canvas: HTMLCanvasElement): IGet {
 
     };
     constructor() {
-      const speed = getXYSpeedByK(0.1)
+      const speed = getXYSpeedByK(0.6)
       this.x = Math.random() * canvas.width;
       this.y = Math.random() * canvas.height;
       this.initialX = this.x;
@@ -113,7 +113,7 @@ export function get(canvas: HTMLCanvasElement): IGet {
       if (distance > this.allowedRadius) {
         let cosAngle = -1;
         do {
-          const speed = getXYSpeedByK(0.1, this.speedX, this.speedY);
+          const speed = getXYSpeedByK(0.6, this.speedX, this.speedY);
           this.speedX = speed.x;
           this.speedY = speed.y;
           const info = getFeaturePathData(this);
@@ -121,9 +121,12 @@ export function get(canvas: HTMLCanvasElement): IGet {
           cosAngle = info.cosAngle;
         }
         while (cosAngle < 0);
-        console.log(this);
       }
-      
+      // const x0 = this.featurePath.centerX;
+      // const y0 = this.featurePath.centerY;
+      // const featureD = this.featurePath.dictance / 2
+      // const d = Math.sqrt(Math.pow(x0 - this.x, 2) + Math.pow(y0 - this.y, 2)) || 0.000000000001;
+   
       this.x += this.speedX;
       this.y += this.speedY;
 
@@ -135,10 +138,10 @@ export function get(canvas: HTMLCanvasElement): IGet {
       ctx.arc(this.x, this.y, this.size, 0, 2 * Math.PI);
       ctx.fill();
 
-      ctx.fillStyle = 'rgba(103, 17, 05, 0.1)';
-      ctx.beginPath();
-      ctx.arc(this.initialX, this.initialY, this.allowedRadius, 0, 2 * Math.PI);
-      ctx.fill();
+      // ctx.fillStyle = 'rgba(103, 17, 05, 0.1)';
+      // ctx.beginPath();
+      // ctx.arc(this.initialX, this.initialY, this.allowedRadius, 0, 2 * Math.PI);
+      // ctx.fill();
     }
   }
 

@@ -80,7 +80,7 @@ export default function animate(canvas: HTMLCanvasElement): IAnimate {
     };
   }
 
-  let { particlesObj, linesObj, linesArr } = createCrystal(1);
+  let { particlesObj, linesObj, linesArr } = createCrystal(100);
   return {
     start: () => {
       (function animate() {
