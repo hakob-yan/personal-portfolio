@@ -94,14 +94,14 @@ export function get(canvas: HTMLCanvasElement): IGet {
         this.speedX = speed.x;
         this.speedY = speed.y;
         
-        // const a = { x: this.speedX, y: this.speedY }
-        // const b = { x: this.initialX - this.x, y: this.initialY - this.y };
-        // const da = Math.sqrt(a.x * a.x + a.y * a.y)
-        // const db = Math.sqrt(b.x * b.x + b.y * b.y);
-        // const cosAngle = (a.x * b.x + a.y * b.y) / (da * db);
-        // const featureDistance = Math.abs(2 * cosAngle * this.allowedRadius);
-        // const k = Math.sqrt(1 / (this.speedX * this.speedX + this.speedY * this.speedY))
-        // this.featurePath = { dictance: featureDistance, centerX: featureDistance / 2 * k * this.speedX, centerY: featureDistance / 2 * k * this.speedY };
+        const a = { x: this.speedX, y: this.speedY }
+        const b = { x: this.initialX - this.x, y: this.initialY - this.y };
+        const da = Math.sqrt(a.x * a.x + a.y * a.y)
+        const db = Math.sqrt(b.x * b.x + b.y * b.y);
+        const cosAngle = (a.x * b.x + a.y * b.y) / (da * db);
+        const featureDistance = Math.abs(2 * cosAngle * this.allowedRadius);
+        const k = Math.sqrt(1 / (this.speedX * this.speedX + this.speedY * this.speedY))
+        this.featurePath = { dictance: featureDistance, centerX: featureDistance / 2 * k * this.speedX, centerY: featureDistance / 2 * k * this.speedY };
         
         console.log(this);
       }
