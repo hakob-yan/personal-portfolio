@@ -11,8 +11,8 @@ export interface IParticle {
   newDirection: boolean;
   featurePath: {
     dictance: number;
-    centerX: number,
-    centerY: number,
+    finalX: number,
+    finalY: number,
 
   };
 
@@ -66,8 +66,8 @@ function getFeaturePathData({ speedX, speedY, initialX, initialY, allowedRadius,
   const cosAngle = (a.x * b.x + a.y * b.y) / (da * db);
 
   const featureDistance = Math.abs(2 * cosAngle * allowedRadius);
-  const k = Math.sqrt(Math.pow(0.5 * featureDistance, 2) / (speedX * speedX + speedY * speedY));
-  const featurePath = { dictance: featureDistance, centerX: x + k * speedX, centerY: y + k * speedY };
+  const k = Math.sqrt(Math.pow(featureDistance, 2) / (speedX * speedX + speedY * speedY));
+  const featurePath = { dictance: featureDistance, finalX: x + k * speedX, finalY: y + k * speedY };
   return { featurePath, cosAngle }
 }
 
@@ -88,12 +88,12 @@ export function get(canvas: HTMLCanvasElement): IGet {
     newDirection: boolean;
     featurePath: {
       dictance: number;
-      centerX: number,
-      centerY: number,
+      finalX: number,
+      finalY: number,
 
     };
     constructor() {
-      const speed = getXYSpeedByK(0.6)
+      const speed = getXYSpeedByK(0.2)
       this.x = Math.random() * canvas.width;
       this.y = Math.random() * canvas.height;
       this.initialX = this.x;
@@ -104,16 +104,21 @@ export function get(canvas: HTMLCanvasElement): IGet {
       this.speedX = speed.x
       this.speedY = speed.y
       this.newDirection = true;
-      this.featurePath = { dictance: this.allowedRadius, centerX: 0, centerY: 0 };
+      const cosAngle = this.speedX / (Math.sqrt(Math.pow(this.speedX, 2) + Math.pow(this.speedY, 2)));
+      const sinAngle = Math.sqrt(1 - Math.pow(cosAngle, 2))
+      this.featurePath = { dictance: this.allowedRadius, finalX:this.x+ this.allowedRadius * cosAngle, finalY:this.y+ this.allowedRadius * sinAngle };
+      console.log(JSON.stringify(this, null, 4));
+
     }
     update() {
-      const dx = this.x + this.speedX - this.initialX;
-      const dy = this.y + this.speedY - this.initialY;
+      const dx = this.x - this.initialX;
+      const dy = this.y - this.initialY;
       const distance = Math.sqrt(dx * dx + dy * dy);
       if (distance > this.allowedRadius) {
+
         let cosAngle = -1;
         do {
-          const speed = getXYSpeedByK(0.6, this.speedX, this.speedY);
+          const speed = getXYSpeedByK(0.2, this.speedX, this.speedY);
           this.speedX = speed.x;
           this.speedY = speed.y;
           const info = getFeaturePathData(this);
@@ -121,14 +126,20 @@ export function get(canvas: HTMLCanvasElement): IGet {
           cosAngle = info.cosAngle;
         }
         while (cosAngle < 0);
+        console.log(distance);
+        console.log(JSON.stringify(this, null, 4));
+
+
       }
-      // const x0 = this.featurePath.centerX;
-      // const y0 = this.featurePath.centerY;
-      // const featureD = this.featurePath.dictance / 2
-      // const d = Math.sqrt(Math.pow(x0 - this.x, 2) + Math.pow(y0 - this.y, 2)) || 0.000000000001;
-   
-      this.x += this.speedX;
-      this.y += this.speedY;
+      const x0 = this.featurePath.finalX;
+      const y0 = this.featurePath.finalY;
+      const featureD = this.featurePath.dictance
+      const d = Math.sqrt(Math.pow(x0 - this.x, 2) + Math.pow(y0 - this.y, 2)) || 0.000000000001;
+      let k = d / featureD;
+      // console.log(k);
+
+      this.x += (this.speedX)
+      this.y += (this.speedY);
 
     }
     draw() {
@@ -138,10 +149,10 @@ export function get(canvas: HTMLCanvasElement): IGet {
       ctx.arc(this.x, this.y, this.size, 0, 2 * Math.PI);
       ctx.fill();
 
-      // ctx.fillStyle = 'rgba(103, 17, 05, 0.1)';
-      // ctx.beginPath();
-      // ctx.arc(this.initialX, this.initialY, this.allowedRadius, 0, 2 * Math.PI);
-      // ctx.fill();
+      ctx.fillStyle = 'rgba(103, 17, 05, 0.1)';
+      ctx.beginPath();
+      ctx.arc(this.initialX, this.initialY, this.allowedRadius, 0, 2 * Math.PI);
+      ctx.fill();
     }
   }
 
