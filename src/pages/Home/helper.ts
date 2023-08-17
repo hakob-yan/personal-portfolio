@@ -50,6 +50,27 @@ interface IGet {
   createLine: (x1: number, y1: number, x2: number, y2: number) => ILine;
 }
 
+interface IFeaturePath {
+  speedX: number,
+  speedY: number,
+  initialX: number,
+  initialY: number,
+  allowedRadius: number,
+  x: number, y: number
+}
+function getFeaturePathData({ speedX, speedY, initialX, initialY, allowedRadius, x, y }: IFeaturePath) {
+  const a = { x: speedX, y: speedY }
+  const b = { x: initialX - x, y: initialY - y };
+  const da = Math.sqrt(a.x * a.x + a.y * a.y)
+  const db = Math.sqrt(b.x * b.x + b.y * b.y);
+  const cosAngle = (a.x * b.x + a.y * b.y) / (da * db);
+
+  const featureDistance = Math.abs(2 * cosAngle * allowedRadius);
+  const k = Math.sqrt(0.5 * featureDistance / (speedX * speedX + speedY * speedY));
+  const featurePath = { dictance: featureDistance, centerX:x+k* speedX, centerY:y+ k * speedY };
+  return { featurePath, cosAngle }
+}
+
 export function get(canvas: HTMLCanvasElement): IGet {
   const ctx: CanvasRenderingContext2D = canvas.getContext(
     "2d"
@@ -72,7 +93,7 @@ export function get(canvas: HTMLCanvasElement): IGet {
 
     };
     constructor() {
-      const speed = getXYSpeedByK(0.01)
+      const speed = getXYSpeedByK(0.1)
       this.x = Math.random() * canvas.width;
       this.y = Math.random() * canvas.height;
       this.initialX = this.x;
@@ -90,23 +111,18 @@ export function get(canvas: HTMLCanvasElement): IGet {
       const dy = this.y + this.speedY - this.initialY;
       const distance = Math.sqrt(dx * dx + dy * dy);
       if (distance > this.allowedRadius) {
-        const speed = getXYSpeedByK(0.01, this.speedX, this.speedY);
-        this.speedX = speed.x;
-        this.speedY = speed.y;
-        
-        const a = { x: this.speedX, y: this.speedY }
-        const b = { x: this.initialX - this.x, y: this.initialY - this.y };
-        const da = Math.sqrt(a.x * a.x + a.y * a.y)
-        const db = Math.sqrt(b.x * b.x + b.y * b.y);
-        const cosAngle = (a.x * b.x + a.y * b.y) / (da * db);
-        const featureDistance = Math.abs(2 * cosAngle * this.allowedRadius);
-        const k = Math.sqrt(1 / (this.speedX * this.speedX + this.speedY * this.speedY))
-        this.featurePath = { dictance: featureDistance, centerX: featureDistance / 2 * k * this.speedX, centerY: featureDistance / 2 * k * this.speedY };
-        
+        let cosAngle = -1;
+        do {
+          const speed = getXYSpeedByK(0.1, this.speedX, this.speedY);
+          this.speedX = speed.x;
+          this.speedY = speed.y;
+          const info = getFeaturePathData(this);
+          this.featurePath = info.featurePath;
+          cosAngle = info.cosAngle;
+        }
+        while (cosAngle < 0);
         console.log(this);
       }
-      
-      
       
       this.x += this.speedX;
       this.y += this.speedY;
