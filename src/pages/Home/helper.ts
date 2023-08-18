@@ -19,7 +19,7 @@ export interface IParticle {
   update: () => void;
   draw: () => void;
 }
-
+const clr = "rgba(255,0,0,0.1)"
 function getXYSpeedByK(speedK: number, prevSpeedX?: number, prevSpeedY?: number) {
   const speed = { x: 0, y: 0 }
   if (prevSpeedX !== undefined && prevSpeedY !== undefined) {
@@ -41,6 +41,7 @@ export interface ILine {
   y1: number;
   x2: number;
   y2: number;
+  allowedDistance:number,
   update: (key: string, x: number, y: number) => void;
   draw: () => void;
 }
@@ -93,14 +94,14 @@ export function get(canvas: HTMLCanvasElement): IGet {
 
     };
     constructor() {
-      const speed = getXYSpeedByK(2)
+      const speed = getXYSpeedByK(0.7)
       this.x = Math.random() * canvas.width;
       this.y = Math.random() * canvas.height;
       this.initialX = this.x;
       this.initialY = this.y;
-      this.allowedRadius = 100;
+      this.allowedRadius =320;
       this.size = 5;
-      this.color = "rgba(103, 557, 05, 0.2)";
+      this.color = clr;
       this.speedX = speed.x
       this.speedY = speed.y
       this.newDirection = true;
@@ -117,7 +118,7 @@ export function get(canvas: HTMLCanvasElement): IGet {
 
         let cosAngle = -1;
         do {
-          const speed = getXYSpeedByK(2, this.speedX, this.speedY);
+          const speed = getXYSpeedByK(0.7, this.speedX, this.speedY);
           this.speedX = speed.x;
           this.speedY = speed.y;
           const info = getFeaturePathData(this);
@@ -133,8 +134,8 @@ export function get(canvas: HTMLCanvasElement): IGet {
       const featureD = this.featurePath.dictance
       const d = Math.sqrt(Math.pow(x0 - this.x, 2) + Math.pow(y0 - this.y, 2)) || 0.000000000001;
       let k = d / featureD;
-      if (k < 0.05) {
-        k = 0.05
+      if (k < 0.5) {
+        k = 0.5
       }
 
       this.x += (this.speedX * k)
@@ -160,11 +161,13 @@ export function get(canvas: HTMLCanvasElement): IGet {
     y1: number;
     x2: number;
     y2: number;
+    allowedDistance:number
     constructor(x1: number, y1: number, x2: number, y2: number) {
       this.x1 = x1;
       this.y1 = y1;
       this.x2 = x2;
       this.y2 = y2;
+      this.allowedDistance=170
     }
     update(key: string, x: number, y: number): void {
       if (key === `${this.x1}${this.y1}`) {
@@ -177,12 +180,19 @@ export function get(canvas: HTMLCanvasElement): IGet {
     }
 
     draw(): void {
-      ctx.beginPath();
-      ctx.strokeStyle = "rgba(103, 557, 05, 0.2)";
-      ctx.lineWidth = 1;
-      ctx.moveTo(this.x1, this.y1);
-      ctx.lineTo(this.x2, this.y2);
-      ctx.stroke();
+      const dx = this.x2 - this.x1
+      const dy = this.y2 - this.y1
+      const d = Math.sqrt(dx * dx + dy * dy)
+      if (d < this.allowedDistance) {
+
+        ctx.beginPath();
+        ctx.strokeStyle = clr;
+        ctx.lineWidth = 1;
+        ctx.moveTo(this.x1, this.y1);
+        ctx.lineTo(this.x2, this.y2);
+        ctx.stroke();
+      }
+
     }
   }
 
