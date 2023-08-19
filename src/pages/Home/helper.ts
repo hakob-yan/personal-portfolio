@@ -1,24 +1,5 @@
-export interface IParticle {
-  x: number;
-  y: number;
-  size: number;
-  color: string;
-  speedX: number;
-  speedY: number;
-  initialX: number;
-  initialY: number;
-  allowedRadius: number;
-  newDirection: boolean;
-  featurePath: {
-    dictance: number;
-    finalX: number,
-    finalY: number,
+import { IParticle, ILine ,IGet,IFeaturePath} from "./types";
 
-  };
-
-  update: () => void;
-  draw: () => void;
-}
 const clr = "rgba(255,0,0,0.1)"
 function getXYSpeedByK(speedK: number, prevSpeedX?: number, prevSpeedY?: number) {
   const speed = { x: 0, y: 0 }
@@ -32,33 +13,9 @@ function getXYSpeedByK(speedK: number, prevSpeedX?: number, prevSpeedY?: number)
   const k = Math.sqrt(speedK / (speed.x * speed.x + speed.y * speed.y))
   speed.x = k * speed.x;
   speed.y = k * speed.y;
-
   return speed
 }
 
-export interface ILine {
-  x1: number;
-  y1: number;
-  x2: number;
-  y2: number;
-  allowedDistance:number,
-  update: (key: string, x: number, y: number) => void;
-  draw: () => void;
-}
-
-interface IGet {
-  createRandomParticle: () => IParticle;
-  createLine: (x1: number, y1: number, x2: number, y2: number) => ILine;
-}
-
-interface IFeaturePath {
-  speedX: number,
-  speedY: number,
-  initialX: number,
-  initialY: number,
-  allowedRadius: number,
-  x: number, y: number
-}
 function getFeaturePathData({ speedX, speedY, initialX, initialY, allowedRadius, x, y }: IFeaturePath) {
   const a = { x: speedX, y: speedY }
   const b = { x: initialX - x, y: initialY - y };
@@ -73,9 +30,7 @@ function getFeaturePathData({ speedX, speedY, initialX, initialY, allowedRadius,
 }
 
 export function get(canvas: HTMLCanvasElement): IGet {
-  const ctx: CanvasRenderingContext2D = canvas.getContext(
-    "2d"
-  ) as CanvasRenderingContext2D;
+  const ctx: CanvasRenderingContext2D = canvas.getContext("2d") as CanvasRenderingContext2D;
   class Particle implements IParticle {
     x: number;
     y: number;
@@ -99,7 +54,7 @@ export function get(canvas: HTMLCanvasElement): IGet {
       this.y = Math.random() * canvas.height;
       this.initialX = this.x;
       this.initialY = this.y;
-      this.allowedRadius =320;
+      this.allowedRadius = 320;
       this.size = 5;
       this.color = clr;
       this.speedX = speed.x
@@ -115,7 +70,6 @@ export function get(canvas: HTMLCanvasElement): IGet {
       const dy = this.y - this.initialY;
       const distance = Math.sqrt(dx * dx + dy * dy);
       if (distance > this.allowedRadius) {
-
         let cosAngle = -1;
         do {
           const speed = getXYSpeedByK(0.7, this.speedX, this.speedY);
@@ -127,7 +81,6 @@ export function get(canvas: HTMLCanvasElement): IGet {
         }
         while (cosAngle < 0);
 
-
       }
       const x0 = this.featurePath.finalX;
       const y0 = this.featurePath.finalY;
@@ -137,37 +90,32 @@ export function get(canvas: HTMLCanvasElement): IGet {
       if (k < 0.5) {
         k = 0.5
       }
-
       this.x += (this.speedX * k)
       this.y += (this.speedY * k);
-
     }
     draw() {
-
       ctx.fillStyle = this.color;
       ctx.beginPath();
       ctx.arc(this.x, this.y, this.size, 0, 2 * Math.PI);
       ctx.fill();
-
-      // ctx.fillStyle = 'rgba(103, 17, 05, 0.1)';
-      // ctx.beginPath();
-      // ctx.arc(this.initialX, this.initialY, this.allowedRadius, 0, 2 * Math.PI);
-      // ctx.fill();
+      ctx.fillStyle = 'rgba(10, 2, 50, 0.01)';
+      ctx.beginPath();
+      ctx.arc(this.initialX, this.initialY, this.allowedRadius, 0, 2 * Math.PI);
+      ctx.fill();
     }
   }
-
   class Line implements ILine {
     x1: number;
     y1: number;
     x2: number;
     y2: number;
-    allowedDistance:number
+    allowedDistance: number
     constructor(x1: number, y1: number, x2: number, y2: number) {
       this.x1 = x1;
       this.y1 = y1;
       this.x2 = x2;
       this.y2 = y2;
-      this.allowedDistance=170
+      this.allowedDistance = 170
     }
     update(key: string, x: number, y: number): void {
       if (key === `${this.x1}${this.y1}`) {
@@ -184,18 +132,15 @@ export function get(canvas: HTMLCanvasElement): IGet {
       const dy = this.y2 - this.y1
       const d = Math.sqrt(dx * dx + dy * dy)
       if (d < this.allowedDistance) {
-
         ctx.beginPath();
         ctx.strokeStyle = clr;
-        ctx.lineWidth = 1;
+        ctx.lineWidth = 1.5;
         ctx.moveTo(this.x1, this.y1);
         ctx.lineTo(this.x2, this.y2);
         ctx.stroke();
       }
-
     }
   }
-
   return {
     createRandomParticle(): IParticle {
       return new Particle();

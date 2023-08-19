@@ -1,19 +1,5 @@
 import { get } from "./helper";
-import { IParticle, ILine } from "./helper";
-
-interface IParticles {
-  [key: string]: IParticle;
-}
-interface ILines {
-  [key: string]: ILine[];
-}
-
-interface IAnimate {
-  start: () => void,
-  end: () => void,
-
-}
-
+import { IParticles,IParticle,ILines,ILine,IAnimate } from "./types";
 
 export default function animate(canvas: HTMLCanvasElement): IAnimate {
   if (!canvas) {
@@ -22,9 +8,7 @@ export default function animate(canvas: HTMLCanvasElement): IAnimate {
       end: () => { }
     };
   }
-  const ctx: CanvasRenderingContext2D = canvas.getContext(
-    "2d"
-  ) as CanvasRenderingContext2D;
+  const ctx: CanvasRenderingContext2D = canvas.getContext("2d") as CanvasRenderingContext2D;
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
   window.onresize = () => {
@@ -85,7 +69,6 @@ export default function animate(canvas: HTMLCanvasElement): IAnimate {
     start: () => {
       (function animate() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-
         for (let key in particlesObj) {
           particlesObj[key].update();
           particlesObj[key].draw();
@@ -100,7 +83,6 @@ export default function animate(canvas: HTMLCanvasElement): IAnimate {
           linesObj[`${newX}${newY}`] = liObj;
         }
         linesArr.forEach(el => el.draw());
-
         requestAnimationFrame(animate);
       })();
 
