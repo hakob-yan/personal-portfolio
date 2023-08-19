@@ -1,6 +1,13 @@
-import { IParticle, ILine, IGet, IFeaturePath } from "./types";
+import { IParticle, ILine, IGet, IFeaturePath, IMouse } from "./types";
 
-const clr = "rgba(255,0,0,0.1)"
+const radiusColor = "rgba(255,0,0,01)";
+const lineColor = "rgba(20,0,255,0.2)";
+const circleColor = lineColor;
+const mouseColor = "rgba(20,0,255,1)";
+
+
+
+
 function getXYSpeedByK(speedK: number, dx?: number, dy?: number) {
   const speed = { x: 0, y: 0 }
   if (dx !== undefined && dy !== undefined) {
@@ -56,7 +63,7 @@ export function get(canvas: HTMLCanvasElement): IGet {
       this.initialY = this.y;
       this.allowedRadius = 100;
       this.size = 5;
-      this.color = clr;
+      this.color = circleColor;
       this.speedX = speed.x
       this.speedY = speed.y
       this.newDirection = true;
@@ -65,7 +72,24 @@ export function get(canvas: HTMLCanvasElement): IGet {
       this.featurePath = { dictance: this.allowedRadius, finalX: this.x + this.allowedRadius * cosAngle, finalY: this.y + this.allowedRadius * sinAngle };
 
     }
-    update() {
+    update(mouse: IMouse) {
+      if (mouse.x && mouse.y) {
+        const isInMouseArea = Math.sqrt(Math.pow(mouse.x - this.x, 2) + Math.pow(mouse.y - this.y, 2)) < mouse.radius
+        if (isInMouseArea) {
+          this.color = mouseColor;
+          this.x += (this.speedX * 6)
+          this.y += (this.speedY * 6);
+
+        }
+        else {
+          this.color = lineColor;
+        }
+
+      }
+      else{
+        this.color = lineColor;
+
+      }
       const dx = this.x + this.speedX - this.initialX;
       const dy = this.y + this.speedY - this.initialY;
       const distance = Math.sqrt(dx * dx + dy * dy);
@@ -92,7 +116,7 @@ export function get(canvas: HTMLCanvasElement): IGet {
       ctx.beginPath();
       ctx.arc(this.x, this.y, this.size, 0, 2 * Math.PI);
       ctx.fill();
-      // ctx.fillStyle = 'rgba(10, 2, 50, 0.4)';
+      // ctx.fillStyle = radiusColor;
       // ctx.beginPath();
       // ctx.arc(this.initialX, this.initialY, this.allowedRadius, 0, 2 * Math.PI);
       // ctx.fill();
@@ -103,15 +127,30 @@ export function get(canvas: HTMLCanvasElement): IGet {
     y1: number;
     x2: number;
     y2: number;
+    color: string;
     allowedDistance: number
     constructor(x1: number, y1: number, x2: number, y2: number) {
       this.x1 = x1;
       this.y1 = y1;
       this.x2 = x2;
       this.y2 = y2;
-      this.allowedDistance = 170
+      this.allowedDistance = 170;
+      this.color = lineColor
     }
-    update(key: string, x: number, y: number): void {
+    update(key: string, x: number, y: number, mouse: IMouse): void {
+      if (mouse.x && mouse.y ) {
+        const isInMouseArea = Math.sqrt(Math.pow(mouse.x - this.x1, 2) + Math.pow(mouse.y - this.y1, 2)) < mouse.radius
+        if (isInMouseArea) {
+          this.color = mouseColor
+        }
+        else {
+          this.color = lineColor
+        }
+
+      }
+      else {
+        this.color = lineColor;
+      }
       if (key === `${this.x1}${this.y1}`) {
         this.x1 = x;
         this.y1 = y;
@@ -127,7 +166,7 @@ export function get(canvas: HTMLCanvasElement): IGet {
       const d = Math.sqrt(dx * dx + dy * dy)
       if (d < this.allowedDistance) {
         ctx.beginPath();
-        ctx.strokeStyle = clr;
+        ctx.strokeStyle = this.color;
         ctx.lineWidth = 1.5;
         ctx.moveTo(this.x1, this.y1);
         ctx.lineTo(this.x2, this.y2);

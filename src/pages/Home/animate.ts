@@ -1,5 +1,11 @@
 import { get } from "./helper";
-import { IParticles,IParticle,ILines,ILine,IAnimate } from "./types";
+import { IParticles, IParticle, ILines, ILine, IAnimate, IMouse } from "./types";
+
+const mouse: IMouse = {
+  x: undefined,
+  y: undefined,
+  radius: 0
+}
 
 export default function animate(canvas: HTMLCanvasElement): IAnimate {
   if (!canvas) {
@@ -11,6 +17,15 @@ export default function animate(canvas: HTMLCanvasElement): IAnimate {
   const ctx: CanvasRenderingContext2D = canvas.getContext("2d") as CanvasRenderingContext2D;
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
+  canvas.addEventListener('mousemove', (e) => {
+    mouse.x = e.x;
+    mouse.y = e.y;
+    mouse.radius=250
+  })
+  canvas.addEventListener('mouseleave', () => {
+    mouse.x = undefined;
+    mouse.y = undefined;
+  })
   window.onresize = () => {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
@@ -70,11 +85,11 @@ export default function animate(canvas: HTMLCanvasElement): IAnimate {
       (function animate() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         for (let key in particlesObj) {
-          particlesObj[key].update();
+          particlesObj[key].update(mouse);
           particlesObj[key].draw();
           const newX = particlesObj[key].x;
           const newY = particlesObj[key].y;
-          linesObj[key].forEach((el) => el.update(key, newX, newY));
+          linesObj[key].forEach((el) => el.update(key, newX, newY, mouse));
           const partObj = particlesObj[key];
           delete particlesObj[key];
           particlesObj[`${newX}${newY}`] = partObj;
@@ -91,7 +106,7 @@ export default function animate(canvas: HTMLCanvasElement): IAnimate {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       particlesObj = {};
       linesObj = {};
-      linesArr = [];      
+      linesArr = [];
     }
   }
 

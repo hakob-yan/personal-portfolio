@@ -16,7 +16,7 @@ export interface IParticle {
 
     };
 
-    update: () => void;
+    update: (mouse: IMouse) => void;
     draw: () => void;
 }
 
@@ -25,8 +25,9 @@ export interface ILine {
     y1: number;
     x2: number;
     y2: number;
+    color: string;
     allowedDistance: number,
-    update: (key: string, x: number, y: number) => void;
+    update: (key: string, x: number, y: number, mouse: IMouse) => void;
     draw: () => void;
 }
 
@@ -54,4 +55,10 @@ export interface IFeaturePath {
     initialY: number,
     allowedRadius: number,
     x: number, y: number
+}
+
+export interface IMouse {
+    x: undefined | number,
+    y: undefined | number,
+    radius: number
 }
