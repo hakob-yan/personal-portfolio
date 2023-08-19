@@ -1,11 +1,11 @@
-import { IParticle, ILine ,IGet,IFeaturePath} from "./types";
+import { IParticle, ILine, IGet, IFeaturePath } from "./types";
 
 const clr = "rgba(255,0,0,0.1)"
-function getXYSpeedByK(speedK: number, prevSpeedX?: number, prevSpeedY?: number) {
+function getXYSpeedByK(speedK: number, dx?: number, dy?: number) {
   const speed = { x: 0, y: 0 }
-  if (prevSpeedX !== undefined && prevSpeedY !== undefined) {
-    speed.x = -Math.sign(prevSpeedX) * Math.random();
-    speed.y = -Math.sign(prevSpeedY) * Math.random();
+  if (dx !== undefined && dy !== undefined) {
+    speed.x = Math.sign(dx) * Math.abs(Math.random() * 2 - 1);
+    speed.y = Math.sign(dy) * Math.abs(Math.random() * 2 - 1);
   } else {
     speed.x = Math.random() * 2 - 1;
     speed.y = Math.random() * 2 - 1;
@@ -54,7 +54,7 @@ export function get(canvas: HTMLCanvasElement): IGet {
       this.y = Math.random() * canvas.height;
       this.initialX = this.x;
       this.initialY = this.y;
-      this.allowedRadius = 320;
+      this.allowedRadius = 100;
       this.size = 5;
       this.color = clr;
       this.speedX = speed.x
@@ -66,21 +66,15 @@ export function get(canvas: HTMLCanvasElement): IGet {
 
     }
     update() {
-      const dx = this.x - this.initialX;
-      const dy = this.y - this.initialY;
+      const dx = this.x + this.speedX - this.initialX;
+      const dy = this.y + this.speedY - this.initialY;
       const distance = Math.sqrt(dx * dx + dy * dy);
       if (distance > this.allowedRadius) {
-        let cosAngle = -1;
-        do {
-          const speed = getXYSpeedByK(0.7, this.speedX, this.speedY);
-          this.speedX = speed.x;
-          this.speedY = speed.y;
-          const info = getFeaturePathData(this);
-          this.featurePath = info.featurePath;
-          cosAngle = info.cosAngle;
-        }
-        while (cosAngle < 0);
-
+        const speed = getXYSpeedByK(0.7, this.initialX - this.x, this.initialY - this.y);
+        this.speedX = speed.x;
+        this.speedY = speed.y;
+        const info = getFeaturePathData(this);
+        this.featurePath = info.featurePath;
       }
       const x0 = this.featurePath.finalX;
       const y0 = this.featurePath.finalY;
@@ -98,10 +92,10 @@ export function get(canvas: HTMLCanvasElement): IGet {
       ctx.beginPath();
       ctx.arc(this.x, this.y, this.size, 0, 2 * Math.PI);
       ctx.fill();
-      ctx.fillStyle = 'rgba(10, 2, 50, 0.01)';
-      ctx.beginPath();
-      ctx.arc(this.initialX, this.initialY, this.allowedRadius, 0, 2 * Math.PI);
-      ctx.fill();
+      // ctx.fillStyle = 'rgba(10, 2, 50, 0.4)';
+      // ctx.beginPath();
+      // ctx.arc(this.initialX, this.initialY, this.allowedRadius, 0, 2 * Math.PI);
+      // ctx.fill();
     }
   }
   class Line implements ILine {
