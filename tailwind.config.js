@@ -4,11 +4,10 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        accent: {
-          1: `var(--color-bkg)`,
-        },
+        font: { color: `var( --color-primary-text)` },
         primary: {
-          1: `#0c061f`,
+          1: `var(--color-primary-1)`,
+          2: `var(--color-primary-2)`,
         },
       },
       backgroundImage: {

@@ -17,7 +17,7 @@ export default function animate(canvas: HTMLCanvasElement): IAnimate {
   const ctx: CanvasRenderingContext2D = canvas.getContext("2d") as CanvasRenderingContext2D;
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
-  canvas.addEventListener('mousemove', (event) => {
+  window.addEventListener('mousemove', (event) => {
 
     mouse.x = event.clientX + window.pageXOffset;
     mouse.y = event.clientY + window.pageYOffset;
@@ -80,7 +80,7 @@ export default function animate(canvas: HTMLCanvasElement): IAnimate {
     };
   }
 
-  let { particlesObj, linesObj, linesArr } = createCrystal(200);
+  let { particlesObj, linesObj, linesArr } = createCrystal(170);
   return {
     start: () => {
       (function animate() {
