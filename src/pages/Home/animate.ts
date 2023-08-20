@@ -17,10 +17,11 @@ export default function animate(canvas: HTMLCanvasElement): IAnimate {
   const ctx: CanvasRenderingContext2D = canvas.getContext("2d") as CanvasRenderingContext2D;
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
-  canvas.addEventListener('mousemove', (e) => {
-    mouse.x = e.x;
-    mouse.y = e.y;
-    mouse.radius=250
+  canvas.addEventListener('mousemove', (event) => {
+
+    mouse.x = event.clientX + window.pageXOffset;
+    mouse.y = event.clientY + window.pageYOffset;
+    mouse.radius = 250
   })
   canvas.addEventListener('mouseleave', () => {
     mouse.x = undefined;
@@ -38,7 +39,7 @@ export default function animate(canvas: HTMLCanvasElement): IAnimate {
     const linesObj: ILines = {};
     const linesArr: ILine[] = []
     for (let i = 0; i < count; ++i) {
-      const randomParticle = createRandomParticle();
+      const randomParticle = createRandomParticle(50);
       const x = randomParticle.x;
       const y = randomParticle.y;
       particlesObj[`${x}${y}`] = randomParticle;

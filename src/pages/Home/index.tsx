@@ -14,10 +14,10 @@ const Home = (): ReactElement => {
   }, [])
   return (
     <main>
-      <section className="h-screen">
-        <canvas style={{ backgroundImage: `linear-gradient(to right, #000000, #000000, #000000, #000000, #000000, #0f0306, #1a070b, #210a0f, #320d14, #440d15, #560d14, #670f0f)` }} className='h-full w-full' ref={canvasElem}></canvas>
+      <section className="h-screen bg-primary-1">
+        <canvas  className='h-full w-full' ref={canvasElem}></canvas>
       </section>
-      <section className="flex">Hello</section>
+      <section className="flex min-h-screen bg-primary-1">Hello</section>
     </main>
   );
 };
