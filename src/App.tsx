@@ -9,7 +9,7 @@ import * as paths from "./constants/routerPaths"
 function App(): ReactElement {
   return (
     <BrowserRouter>
-      <div className="relative">
+      <div className="relative bg-primary-1 ">
         <NavBar />
         <Routes>
           <Route path={paths.HOME} element={<Home />} />

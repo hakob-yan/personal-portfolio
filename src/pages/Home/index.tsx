@@ -9,6 +9,7 @@ import Gmail from "../../assets/icons/gmail";
 import GitHub from "../../assets/icons/github";
 import Phone from "../../assets/icons/phone";
 import Location from "../../assets/icons/location";
+import Me from '../../assets/images/me.png'
 
 const socialMediaArr = [
   { src: Phone, value: "+374-93-102-122", link: "tel:+374-93-102-122" },
@@ -25,21 +26,25 @@ const Home = (): ReactElement => {
     const animate = canvasAnimate(canvasElem.current as HTMLCanvasElement);
     animate.start();
     return () => animate.end();
+    
   }, [])
   return (
     <main className='text-font-color'>
-      <section className="h-screen bg-primary-1 relative flex justify-start items-center	p-20">
+      <section className="h-screen relative flex justify-start items-center	px-20">
         {/* <canvas className='absolute h-full w-full ' ref={canvasElem}></canvas> */}
         <aside className='font-extrabold flex	flex-col gap-y-5 items-start z-10'>
           <p className='relative text-4xl'>Welcome, I'am </p>
           <p className='relative text-6xl'>HAKOB  <span className='text-primary-2'>Web Developer</span></p>
           <p className='relative text-4xl'>I help you to transform your ideas into digital reality. </p>
           <span className='flex  gap-x-5'> {socialMediaArr.map(el => (<SocialMedia link={el.link} src={el.src} color='#7651fc' hoverColor='#fff' />))} </span>
-          <Button text='Download CV' />
+          <div className="flex gap-x-5"><Button text='Download CV' /><Button text='Hire me ' /></div>
+
+
         </aside>
+        <img src={Me} alt="" className='z-10 self-end w-3/4'/>
 
       </section>
-      <section className="flex min-h-screen bg-primary-1">Hello</section>
+      <section className="flex min-h-screen ">Hello</section>
     </main>
   );
 };
