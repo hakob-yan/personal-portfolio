@@ -31,7 +31,7 @@ const Home = (): ReactElement => {
   return (
     <main className='text-font-color'>
       <section className="h-screen relative flex justify-start items-center	px-20">
-        {/* <canvas className='absolute h-full w-full ' ref={canvasElem}></canvas> */}
+        <canvas className='fixed h-full w-full ' ref={canvasElem}></canvas>
         <aside className='font-extrabold flex	flex-col gap-y-5 items-start z-10'>
           <p className='relative text-4xl'>Welcome, I'am </p>
           <p className='relative text-6xl'>HAKOB  <span className='text-primary-2'>Web Developer</span></p>
