@@ -3,7 +3,7 @@ import { IParticle, ILine, IGet, IFeaturePath, IMouse } from "./types";
 const radiusColor = "rgba(255,0,0,01)";
 const lineColor = 'rgba(100, 100, 252,0.4)';
 const circleColor = lineColor;
-const mouseColor = "rgba(20,0,255,1)";
+const mouseColor = "rgba(200,0,255,1)";
 
 
 
